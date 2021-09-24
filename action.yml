@@ -36,7 +36,7 @@ runs:
       shell: bash
     - name: copy dockerfile
       run: |
-        mkdir -p ${GITHUB_WORKSPACE}/build/docker/service && cp ${{ github.action_path }}/${{ steps.prep.outputs.dockerfile }} build/docker/service && cp ${GITHUB_REPOSITORY#*/}/build/libs/* build/docker/service
+        mkdir -p build/docker/service && cp ${{ github.action_path }}/${{ steps.prep.outputs.dockerfile }} build/docker/service && cp build/libs/* build/docker/service
       shell: bash
     - name: Set up Docker Buildx
       id: buildx
