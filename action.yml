@@ -13,7 +13,7 @@ runs:
     - name: Prepare
       id: prep
       run: |
-        IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}
+        IMAGE_NAME=${{inputs.registry_username}}/${{ env.DEPLOYMENT_NAME }}
         VERSION=latest
         SHORTREF=${GITHUB_SHA::8}
         DOCKERFILE=Dockerfile
