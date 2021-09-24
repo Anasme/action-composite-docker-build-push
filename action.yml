@@ -21,8 +21,14 @@ runs:
           DOCKERFILE=Dockerfile-ops
         fi
         TAGS="${IMAGE_NAME}:${VERSION},${DOCKER_IMAGE}:${SHORTREF}"
+        echo ::set-output name=tags::${TAGS}
         echo ::set-output name=image_name::${IMAGE_NAME}
         echo ::set-output name=dockerfile=dockerfile::${DOCKERFILE}
+      shell: bash
+    - name: check output
+      run: |
+        echo "The selected color is ${{ steps.prep.outputs.dockerfile }}"
+        echo "The selected color is ${{ steps.prep.outputs.tags }}"
       shell: bash
     - name: copy dockerfile
       run: |
