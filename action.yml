@@ -16,7 +16,8 @@ runs:
         IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}
         VERSION=latest
         SHORTREF=${GITHUB_SHA::8}
-        if [[ $GITHUB_REF == refs/heads/ops ]]; then
+        DOCKERFILE=Dockerfile
+        if [[ ${GITHUB_REF} == refs/heads/ops ]]; then
           IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}-ops
           DOCKERFILE=Dockerfile-ops
         fi
@@ -27,8 +28,9 @@ runs:
       shell: bash
     - name: check output
       run: |
-        echo "The selected color is ${{ steps.prep.outputs.dockerfile }}"
-        echo "The selected color is ${{ steps.prep.outputs.tags }}"
+        echo "The dockerfile name is ${{ steps.prep.outputs.dockerfile }}"
+        echo "The image name is ${{ steps.prep.outputs.image_name }}"
+        echo "The tag is ${{ steps.prep.outputs.tags }}"
       shell: bash
     - name: copy dockerfile
       run: |
