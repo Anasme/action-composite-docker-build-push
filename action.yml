@@ -18,7 +18,7 @@ runs:
         SHORTREF=${GITHUB_SHA::8}
         DOCKERFILE=Dockerfile
         if [[ ${GITHUB_REF} == refs/heads/ops ]]; then
-          IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}-ops
+          IMAGE_NAME=${IMAGE_NAME}-ops
           DOCKERFILE=Dockerfile-ops
         fi
         TAGS="${IMAGE_NAME}:${VERSION},${IMAGE_NAME}:${SHORTREF}"
