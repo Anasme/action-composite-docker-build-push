@@ -22,7 +22,7 @@ runs:
         fi
         TAGS="${IMAGE_NAME}:${VERSION},${DOCKER_IMAGE}:${SHORTREF}"
         echo ::set-output name=image_name::${IMAGE_NAME}
-        echo ::set-output dockerfile=dockerfile::${DOCKERFILE}
+        echo ::set-output name=dockerfile=dockerfile::${DOCKERFILE}
       shell: bash
     - name: copy dockerfile
       run: |
