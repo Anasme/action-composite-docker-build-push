@@ -21,10 +21,10 @@ runs:
           IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}-ops
           DOCKERFILE=Dockerfile-ops
         fi
-        TAGS="${IMAGE_NAME}:${VERSION},${DOCKER_IMAGE}:${SHORTREF}"
+        TAGS="${IMAGE_NAME}:${VERSION},${IMAGE_NAME}:${SHORTREF}"
         echo ::set-output name=tags::${TAGS}
         echo ::set-output name=image_name::${IMAGE_NAME}
-        echo ::set-output name=dockerfile=dockerfile::${DOCKERFILE}
+        echo ::set-output name=dockerfile::${DOCKERFILE}
       shell: bash
     - name: check output
       run: |
