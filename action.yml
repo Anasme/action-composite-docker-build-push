@@ -13,16 +13,16 @@ runs:
     - name: Prepare
       id: prep
       run: |
-        IMAGE_NAME=${{ DEPLOYMENT_NAME }}
+        IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}
         VERSION=latest
         SHORTREF=${GITHUB_SHA::8}
         if [[ $GITHUB_REF == refs/heads/ops ]]; then
-          IMAGE_NAME=${{ DEPLOYMENT_NAME }}-ops
+          IMAGE_NAME=${{ env.DEPLOYMENT_NAME }}-ops
           DOCKERFILE=Dockerfile-ops
         fi
         TAGS="${IMAGE_NAME}:${VERSION},${DOCKER_IMAGE}:${SHORTREF}"
         echo ::set-output name=image_name::${IMAGE_NAME}
-        echo ::set-output dockerfile=dockerfile::${DOCKERFILE
+        echo ::set-output dockerfile=dockerfile::${DOCKERFILE}
       shell: bash
     - name: copy dockerfile
       run: |
