@@ -7,6 +7,9 @@ inputs:
   schedule:
     description: “Password for image registry”
     required: true
+  cron:
+    description: "toto"
+    required: false
 runs:
   using: "composite"
   steps:
@@ -27,7 +30,7 @@ runs:
         esac
         echo ::set-output name=namespace::${NAMESPACE}
         ## Set release-name
-        RELEASE-NAME=${github.event.repository.name}
+        RELEASE-NAME="${{ github.event.repository.name }}"
         ## Set value file
         if [[ $CRON = true ]]; then
             HELM_VALUES_FILE=service-name-cronjob-values.yaml
