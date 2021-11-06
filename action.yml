@@ -20,7 +20,7 @@ runs:
       run: |
 
         ## Setup cronJob batch_profile & schedule
-        if [[ -n "${{ inputs.cron }} ]]; then
+        if [[ -n "${{ inputs.cron }}" ]]; then
           declare -a batch_profile=(${{ inputs.batch_profile }})
           declare -a schedule=(${{ inputs.schedule }})
         fi
@@ -51,7 +51,7 @@ runs:
         echo "The values file used will be: $HELM_VALUES_FILE"
 
         # Launch install
-        if [[ -n "${{ inputs.cron }} ]]; then
+        if [[ -n "${{ inputs.cron }}" ]]; then
           for i in "${!batch_profile[@]}"; do
               echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart -f $HELM_VALUES_FILE --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n $NAMESPACE"
           done
