@@ -33,7 +33,7 @@ runs:
         #     HELM_VALUES_FILE=service-name-values.yaml
         # fi
         # echo $HELM_VALUES_FILE
-        # for i in "${!batch_profile[@]}"; do
-        #     echo "helm upgrade --install test yuzer-helm-charts/yuzer-service-chart - --set cronProfile=${batch_profile[i]} --set schedule=${schedule[i]}  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
-        # done
+        for i in "${!batch_profile[@]}"; do
+            echo "helm upgrade --install test yuzer-helm-charts/yuzer-service-chart - --set cronProfile=${batch_profile[i]} --set schedule=${schedule[i]}  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
+        done
       shell: bash
