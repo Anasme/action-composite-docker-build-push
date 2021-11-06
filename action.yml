@@ -30,7 +30,8 @@ runs:
         esac
         echo ::set-output name=namespace::${NAMESPACE}
         ## Set release-name
-        echo ::set-env name=RELEASE-NAME::${{ github.event.repository.name }}
+        echo ::set-output name=release-name::${{ github.event.repository.name }}
+        echo "The RELEASE name is ${{ steps.prep.outputs.release-name }}"
         #RELEASE-NAME="${{ github.event.repository.name }}"
         ## Set value file
         if [[ ${{inputs.batch_profile}} == true ]]; then
@@ -44,3 +45,10 @@ runs:
             echo "helm upgrade --install $RELEASE-NAME yuzer-helm-charts/yuzer-service-chart --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
         done
       shell: bash
+    # - name: check output
+    #   run: |
+    #     echo "The RELEASE name is ${{ steps.prep.outputs.dockerfile }}"
+    #     echo "The image name is ${{ steps.prep.outputs.image_name }}"
+    #     echo "The tag with short sha is ${{ steps.prep.outputs.tag_sha }}"        
+    #     echo "The tags are ${{ steps.prep.outputs.tags }}"
+    #   shell: bash
