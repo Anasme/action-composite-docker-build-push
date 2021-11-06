@@ -34,7 +34,7 @@ runs:
         # echo "The RELEASE name is ${{ steps.prep.outputs.release-name }}"
         RELEASE_NAME="${{ github.event.repository.name }}"
         ## Set value file
-        if [[ ${{inputs.batch_profile}} == true ]]; then
+        if [[ ${{inputs.cron}} == true ]]; then
             HELM_VALUES_FILE=service-name-cronjob-values.yaml
             RELEASE_NAME=${RELEASE_NAME}-batch
             else
