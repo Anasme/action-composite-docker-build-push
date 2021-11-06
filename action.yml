@@ -38,7 +38,7 @@ runs:
         esac
         echo "Namespace is set as $NAMESPACE"
         ## Set release-name
-        RELEASE_NAME="${{ github.event.repository.name }}"
+        RELEASE_NAME=${{ github.event.repository.name }}
         if [[ -n "${{ inputs.release_name }}" ]]; then
           RELEASE_NAME=${{inputs.release_name}}
         if [[ -n "${{ inputs.cron }}" ]]; then
@@ -47,7 +47,7 @@ runs:
         echo "The release name is : $RELEASE_NAME"
 
         ## Set value file
-        HELM_VALUES_FILE="${RELEASE_NAME}-values.yaml
+        HELM_VALUES_FILE=${RELEASE_NAME}-values.yaml
         echo "The values file used will be: $HELM_VALUES_FILE"
 
         # Launch install
