@@ -13,23 +13,8 @@ runs:
     - name: Prepare
       id: prep
       run: |
-        IMAGE_NAME=${{inputs.registry_username}}/${{ env.DEPLOYMENT_NAME }}
-        VERSION=latest
-        SHORTREF=${GITHUB_SHA::8}
-        DOCKERFILE=Dockerfile
-        if [[ ${GITHUB_REF} == refs/heads/ops ]]; then
-          IMAGE_NAME=${IMAGE_NAME}-ops
-          DOCKERFILE=Dockerfile-ops
-        fi
-        TAGS="${IMAGE_NAME}:${VERSION},${IMAGE_NAME}:${SHORTREF}"
-        echo ::set-output name=tags::${TAGS}
-        echo ::set-output name=image_name::${IMAGE_NAME}
-        echo ::set-output name=dockerfile::${DOCKERFILE}
-
         declare -a batch_profile=(${{inputs.batch_profile}})
         declare -a schedule=(${{inputs.schedule}})
-        ENV=ops
-        # prep
         ## Set image tag
         TAG_SHORTREF=${GITHUB_SHA::8}
         echo ::set-output name=tag_shortref::${TAG_SHORTREF}
@@ -40,18 +25,16 @@ runs:
           refs/heads/demo) NAMESPACE=dms-demo;;
           refs/heads/prod) NAMESPACE=dms-production;;
         esac
-        echo $NAMESPACE
+        echo ::set-output name=namespace::${NAMESPACE}
         ## Set value file
-        if [[ $CRON = true ]]; then
-            HELM_VALUES_FILE=service-name-cronjob-values.yaml
-            else
-            HELM_VALUES_FILE=service-name-values.yaml
-        fi
-        echo $HELM_VALUES_FILE
-        CRONJOB_VALUES="$batch_profile $schedule"
+        # if [[ $CRON = true ]]; then
+        #     HELM_VALUES_FILE=service-name-cronjob-values.yaml
+        #     else
+        #     HELM_VALUES_FILE=service-name-values.yaml
+        # fi
+        # echo $HELM_VALUES_FILE
+
         for i in "${!batch_profile[@]}"; do
-            #printf "%s is in %s\n" "${batch_profile[i]}" "${schedule[i]}"
             echo "helm upgrade --install test yuzer-helm-charts/yuzer-service-chart - --set cronProfile=${batch_profile[i]} --set schedule=${schedule[i]}  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
         done
-        exit
       shell: bash
