@@ -37,18 +37,20 @@ runs:
           refs/heads/prod) NAMESPACE=dms-production;;
         esac
         echo "Namespace is set as $NAMESPACE"
+
         ## Set release-name
         RELEASE_NAME=${{ github.event.repository.name }}
         if [[ -n "${{ inputs.release_name }}" ]]; then
           RELEASE_NAME=${{inputs.release_name}}
+        fi
         if [[ -n "${{ inputs.cron }}" ]]; then
           RELEASE_NAME=${RELEASE_NAME}-batch
         fi
-        echo "The release name is : $RELEASE_NAME"
+        echo "The release name is $RELEASE_NAME"
 
         ## Set value file
         HELM_VALUES_FILE=${RELEASE_NAME}-values.yaml
-        echo "The values file used will be: $HELM_VALUES_FILE"
+        echo "The values file used will be $HELM_VALUES_FILE"
 
         # Launch install
         if [[ -n "${{ inputs.cron }}" ]]; then
