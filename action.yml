@@ -1,10 +1,10 @@
 name: 'action-composite-docker-build-push'
 description: 'build and push docker image with dockerfile'
 inputs:
-  registry_username:
+  batch_profile:
     description: “Username for image registry”
     required: true
-  registry_password:
+  schedule:
     description: “Password for image registry”
     required: true
 runs:
@@ -25,28 +25,33 @@ runs:
         echo ::set-output name=tags::${TAGS}
         echo ::set-output name=image_name::${IMAGE_NAME}
         echo ::set-output name=dockerfile::${DOCKERFILE}
+
+        declare -a batch_profile=(${{inputs.batch_profile}})
+        declare -a schedule=(${{inputs.schedule}})
+        ENV=ops
+        # prep
+        ## Set image tag
+        TAG_SHORTREF=${GITHUB_SHA::8}
+        echo ::set-output name=tag_shortref::${TAG_SHORTREF}
+        ## Set namespace
+        case ${GITHUB_REF} in
+          refs/heads/ops) NAMESPACE=dms-ops;;
+          refs/heads/master) NAMESPACE=dms-dev;;
+          refs/heads/demo) NAMESPACE=dms-demo;;
+          refs/heads/prod) NAMESPACE=dms-production;;
+        esac
+        echo $NAMESPACE
+        ## Set value file
+        if [[ $CRON = true ]]; then
+            HELM_VALUES_FILE=service-name-cronjob-values.yaml
+            else
+            HELM_VALUES_FILE=service-name-values.yaml
+        fi
+        echo $HELM_VALUES_FILE
+        CRONJOB_VALUES="$batch_profile $schedule"
+        for i in "${!batch_profile[@]}"; do
+            #printf "%s is in %s\n" "${batch_profile[i]}" "${schedule[i]}"
+            echo "helm upgrade --install test yuzer-helm-charts/yuzer-service-chart - --set cronProfile=${batch_profile[i]} --set schedule=${schedule[i]}  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
+        done
+        exit
       shell: bash
-    - name: check output
-      run: |
-        echo "The dockerfile name is ${{ steps.prep.outputs.dockerfile }}"
-        echo "The image name is ${{ steps.prep.outputs.image_name }}"
-        echo "The tag is ${{ steps.prep.outputs.tags }}"
-        echo "$pwd"
-        ls *
-      shell: bash
-    - name: copy dockerfile
-      run: |
-        mkdir -p build/docker/service && cp ${{ github.action_path }}/${{ steps.prep.outputs.dockerfile }} build/docker/service && cp build/libs/* build/docker/service
-      shell: bash
-    - name: Login to DockerHub
-      uses: docker/login-action@v1
-      with:
-        username: ${{inputs.registry_username}}
-        password: ${{inputs.registry_password}}
-    - name: Build
-      uses: docker/build-push-action@v2
-      with:
-        context: build/docker/service
-        file: ${{ github.action_path }}/${{ steps.prep.outputs.dockerfile }}
-        push: true
-        tags: ${{ steps.prep.outputs.tags }}
