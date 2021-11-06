@@ -30,7 +30,8 @@ runs:
         esac
         echo ::set-output name=namespace::${NAMESPACE}
         ## Set release-name
-        RELEASE-NAME="${{ github.event.repository.name }}"
+        echo ::set-env name=RELEASE-NAME::${{ github.event.repository.name }}
+        #RELEASE-NAME="${{ github.event.repository.name }}"
         ## Set value file
         if [[ ${{inputs.batch_profile}} == true ]]; then
             HELM_VALUES_FILE=service-name-cronjob-values.yaml
@@ -40,6 +41,6 @@ runs:
         fi
         echo $HELM_VALUES_FILE
         for i in "${!batch_profile[@]}"; do
-            echo "helm upgrade --install $RELEASE-NAME yuzer-helm-charts/yuzer-service-chart - --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
+            echo "helm upgrade --install $RELEASE-NAME yuzer-helm-charts/yuzer-service-chart --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
         done
       shell: bash
