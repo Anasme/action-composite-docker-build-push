@@ -10,17 +10,25 @@ inputs:
   cron:
     description: "toto"
     required: false
+  release_name:
+    description: "personalize release name"
+    required: false 
 runs:
   using: "composite"
   steps:
-    - name: Prepare
-      id: prep
+    - name: Deploy helm chart yuzer-service-chart
       run: |
-        declare -a batch_profile=(${{inputs.batch_profile}})
-        declare -a schedule=(${{inputs.schedule}})
+
+        ## Setup cronJob batch_profile & schedule
+        if [[ -n "${{ inputs.cron }} ]]; then
+          declare -a batch_profile=(${{ inputs.batch_profile }})
+          declare -a schedule=(${{ inputs.schedule }})
+        fi
+
         ## Set image tag
         TAG_SHORTREF=${GITHUB_SHA::8}
-        echo ::set-output name=tag_shortref::${TAG_SHORTREF}
+        echo "Dockerimage tag is $TAG_SHORTREF"  
+
         ## Set namespace
         case ${GITHUB_REF} in
           refs/heads/ops) NAMESPACE=dms-ops;;
@@ -28,27 +36,27 @@ runs:
           refs/heads/demo) NAMESPACE=dms-demo;;
           refs/heads/prod) NAMESPACE=dms-production;;
         esac
-        echo ::set-output name=namespace::${NAMESPACE}
+        echo "Namespace is set as $NAMESPACE"
         ## Set release-name
-        # echo ::set-output name=release-name::${{ github.event.repository.name }}
-        # echo "The RELEASE name is ${{ steps.prep.outputs.release-name }}"
         RELEASE_NAME="${{ github.event.repository.name }}"
-        ## Set value file
-        if [[ ${{inputs.cron}} == true ]]; then
-            HELM_VALUES_FILE=service-name-cronjob-values.yaml
-            RELEASE_NAME=${RELEASE_NAME}-batch
-            else
-            HELM_VALUES_FILE=service-name-values.yaml
+        if [[ -n "${{ inputs.release_name }}" ]]; then
+          RELEASE_NAME=${{inputs.release_name}}
+        if [[ -n "${{ inputs.cron }}" ]]; then
+          RELEASE_NAME=${RELEASE_NAME}-batch
         fi
-        echo $HELM_VALUES_FILE
-        for i in "${!batch_profile[@]}"; do
-            echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
-        done
+        echo "The release name is : $RELEASE_NAME"
+
+        ## Set value file
+        HELM_VALUES_FILE="${RELEASE_NAME}-values.yaml
+        echo "The values file used will be: $HELM_VALUES_FILE"
+
+        # Launch install
+        if [[ -n "${{ inputs.cron }} ]]; then
+          for i in "${!batch_profile[@]}"; do
+              echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart -f $HELM_VALUES_FILE --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n $NAMESPACE"
+          done
+        else
+          echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart --set image.tag=$TAG_SHORTREF --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
+
       shell: bash
-    # - name: check output
-    #   run: |
-    #     echo "The RELEASE name is ${{ steps.prep.outputs.dockerfile }}"
-    #     echo "The image name is ${{ steps.prep.outputs.image_name }}"
-    #     echo "The tag with short sha is ${{ steps.prep.outputs.tag_sha }}"        
-    #     echo "The tags are ${{ steps.prep.outputs.tags }}"
-    #   shell: bash
+      
