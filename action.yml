@@ -26,6 +26,8 @@ runs:
           refs/heads/prod) NAMESPACE=dms-production;;
         esac
         echo ::set-output name=namespace::${NAMESPACE}
+        ## Set release-name 
+        RELEASE-NAME=${{ github.event.repository.name }}-batch
         ## Set value file
         # if [[ $CRON = true ]]; then
         #     HELM_VALUES_FILE=service-name-cronjob-values.yaml
