@@ -30,19 +30,19 @@ runs:
         esac
         echo ::set-output name=namespace::${NAMESPACE}
         ## Set release-name
-        echo ::set-output name=release-name::${{ github.event.repository.name }}
-        echo "The RELEASE name is ${{ steps.prep.outputs.release-name }}"
-        #RELEASE-NAME="${{ github.event.repository.name }}"
+        # echo ::set-output name=release-name::${{ github.event.repository.name }}
+        # echo "The RELEASE name is ${{ steps.prep.outputs.release-name }}"
+        RELEASE_NAME="${{ github.event.repository.name }}"
         ## Set value file
         if [[ ${{inputs.batch_profile}} == true ]]; then
             HELM_VALUES_FILE=service-name-cronjob-values.yaml
-            RELEASE-NAME=${RELEASE-NAME}-batch
+            RELEASE_NAME=${RELEASE_NAME}-batch
             else
             HELM_VALUES_FILE=service-name-values.yaml
         fi
         echo $HELM_VALUES_FILE
         for i in "${!batch_profile[@]}"; do
-            echo "helm upgrade --install $RELEASE-NAME yuzer-helm-charts/yuzer-service-chart --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
+            echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n dms-$env"
         done
       shell: bash
     # - name: check output
