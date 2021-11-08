@@ -60,6 +60,7 @@ runs:
       
     - name: Install/Update yuzer helm charts repo
       run: |
+        echo ${{ github.event.repository.name }}
         echo "helm repo add --username yuzer-build --password ${{ inputs.scw_secret_token }} yuzer-helm-charts-repo https://raw.githubusercontent.com/anasme/yuzer-helm-chart-repo/repo --force-update"
       shell: bash
 
