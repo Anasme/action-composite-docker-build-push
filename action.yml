@@ -51,7 +51,7 @@ runs:
     #   with:
     #     kube_cluster_name: ${KUBE_CLUSTER_NAME}
     #     scw_secret_token: ${{ inputs.scw_secret_token }}
-
+      shell: bash
     - name: Install helm binaries
       uses: azure/setup-helm@v1
       with:
