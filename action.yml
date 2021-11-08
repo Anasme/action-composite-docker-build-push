@@ -16,6 +16,9 @@ inputs:
   token:
     description: "Token (PAT) to pull helm chart repo"
     required: true
+  scw_secret_token: 
+    description: "specific scw token to retrieve kubeconfig"
+    required: true
 runs:
   using: "composite"
   steps:
