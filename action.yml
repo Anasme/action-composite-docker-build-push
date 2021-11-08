@@ -1,4 +1,4 @@
-name: "action-composite-docker-build-push"
+name: "action-helm-service-install"
 description: "build and push docker image with dockerfile"
 inputs:
   batch_profile:
@@ -8,17 +8,60 @@ inputs:
     description: “Password for image registry”
     required: false
   cron:
-    description: "toto"
+    description: "Enable Kubernetes CronJob"
     required: false
   release_name:
-    description: "personalize release name"
+    description: "Personalize release name (same name as values name in helm folder)"
     required: false
+  token:
+    description: "Token (PAT) to pull helm chart repo"
+    required: true
 runs:
   using: "composite"
   steps:
+    - name: Set SCW cluster name
+      id: clusterName
+      run: |
+        ## Set Kube cluster name by env
+        case ${GITHUB_REF} in
+          refs/heads/ops) 
+            KUBE_CLUSTER_NAME=ops_kube;;
+          refs/heads/master) 
+            KUBE_CLUSTER_NAME=dev_kube;;
+          refs/heads/demo) 
+            KUBE_CLUSTER_NAME=dev_kube;;
+          refs/heads/prod) 
+            KUBE_CLUSTER_NAME=production_kube;;
+        esac
+        echo "Kube cluster name is set as $KUBE_CLUSTER_NAME"
+
+    # - name: Get private repo action-kubeconfig
+    #   uses: actions/checkout@v2
+    #   with:
+    #     repository: gear-group/action-kubeconfig
+    #     ref: master
+    #     token: ${{ secrets.REPOS_TOKEN }}
+    #     path: .github/actions/action-kubeconfig
+
+    # - name: Retrieve kubeconfig file
+    #   uses: ./.github/actions/action-kubeconfig
+    #   with:
+    #     kube_cluster_name: ${KUBE_CLUSTER_NAME}
+    #     scw_secret_token: ${{ inputs.scw_secret_token }}
+
+    - name: Install helm binaries
+      uses: azure/setup-helm@v1
+      with:
+        version: '3.7.1'
+      id: install
+      
+    - name: Install/Update yuzer helm charts repo
+      run: |
+        echo "helm repo add --username yuzer-build --password ${{ inputs.scw_secret_token }} yuzer-helm-charts-repo https://raw.githubusercontent.com/anasme/yuzer-helm-chart-repo/repo --force-update"
+      shell: bash
+
     - name: Deploy helm chart yuzer-service-chart
       run: |
-
         ## Setup cronJob batch_profile & schedule
         if [[ -n "${{ inputs.cron }}" ]]; then
           declare -a batch_profile=(${{ inputs.batch_profile }})
@@ -63,10 +106,10 @@ runs:
         # Launch install
         if [[ -n "${{ inputs.cron }}" ]]; then
           for i in "${!batch_profile[@]}"; do
-              echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart -f helm/global-values.yaml -f helm/${ENV}/${HELM_VALUES_FILE}.yaml --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n $NAMESPACE"
+              echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart -f helm/global-values.yaml -f helm/${ENV}/${HELM_VALUES_FILE} --set image.tag=$TAG_SHORTREF --set cronProfile=${batch_profile[i]} --set schedule=\"${schedule[i]}\"  --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n $NAMESPACE"
           done
         else
-          echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart -f helm/global-values.yaml -f helm/${ENV}/${HELM_VALUES_FILE}.yaml --set image.tag=$TAG_SHORTREF --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n $NAMESPACE"
+          echo "helm upgrade --install $RELEASE_NAME yuzer-helm-charts/yuzer-service-chart -f helm/global-values.yaml -f helm/${ENV}/${HELM_VALUES_FILE} --set image.tag=$TAG_SHORTREF --kubeconfig /tmp/kubeconfig.yml --dry-run --debug -n $NAMESPACE"
         fi
       shell: bash
       
