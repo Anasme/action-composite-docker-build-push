@@ -22,7 +22,7 @@ runs:
         ## Set image tag
         TAG_SHORTREF=${GITHUB_SHA::8}
         echo "Dockerimage tag is $TAG_SHORTREF"  
-        echo ::set-output name=TAG_SHORTREF::${tag_shortref}
+        echo ::set-output name=tag_shortref::${TAG_SHORTREF}
 
         ## Set specific env by branch (cluster name, environement, namespace)
         case ${GITHUB_REF} in
@@ -96,16 +96,16 @@ runs:
         # Launch install
         if [[ ${ENV} == ops ]]; then # Set kube host url for Ops cluster sandbox
           echo "helm upgrade --install ${{ steps.prep.outputs.release_name }} yuzer-helm-charts/yuzer-service-chart \
-            -f helm/global-values.yaml -f helm/${{ steps.prep.outputs.env }}/${{ steps.prep.outputs.helm_values_file }} \
-            --set host=$KUBE_HOST --set image.tag=${{ steps.prep.outputs.tag_shortref }} \
-            --kubeconfig /tmp/kubeconfig.yml \
-            -n ${{ steps.prep.outputs.namespace }}"
+        -f helm/global-values.yaml -f helm/${{ steps.prep.outputs.env }}/${{ steps.prep.outputs.helm_values_file }} \
+        --set host=$KUBE_HOST --set image.tag=${{ steps.prep.outputs.tag_shortref }} \
+        --kubeconfig /tmp/kubeconfig.yml \
+        -n ${{ steps.prep.outputs.namespace }}"
         else
           echo "helm upgrade --install ${{ steps.prep.outputs.release_name }} yuzer-helm-charts/yuzer-service-chart \
-            -f helm/global-values.yaml -f helm/${{ steps.prep.outputs.env }}/${{ steps.prep.outputs.helm_values_file }} \
-            --set image.tag=${{ steps.prep.outputs.tag_shortref }} \
-            --kubeconfig /tmp/kubeconfig.yml \
-            -n ${{ steps.prep.outputs.namespace }}"
+        -f helm/global-values.yaml -f helm/${{ steps.prep.outputs.env }}/${{ steps.prep.outputs.helm_values_file }} \
+        --set image.tag=${{ steps.prep.outputs.tag_shortref }} \
+        --kubeconfig /tmp/kubeconfig.yml \
+        -n ${{ steps.prep.outputs.namespace }}"
         fi
       shell: bash
       
