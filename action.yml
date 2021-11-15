@@ -65,20 +65,20 @@ runs:
         echo "The values file used is $HELM_VALUES_FILE"
         echo ::set-output name=helm_values_file::${HELM_VALUES_FILE}
       shell: bash
-    - name: Get private repo action-kubeconfig
-      uses: actions/checkout@v2
-      with:
-        repository: gear-group/action-kubeconfig
-        ref: master
-        token: ${{ secrets.REPOS_TOKEN }}
-        path: .github/actions/action-kubeconfig
+    # - name: Get private repo action-kubeconfig
+    #   uses: actions/checkout@v2
+    #   with:
+    #     repository: gear-group/action-kubeconfig
+    #     ref: master
+    #     token: ${{ secrets.REPOS_TOKEN }}
+    #     path: .github/actions/action-kubeconfig
 
-    - name: Retrieve kubeconfig file
-      uses: ./.github/actions/action-kubeconfig
-      with:
-        kube_cluster_name: ${{ steps.prep.outputs.kube_cluster_name }}
-        scw_secret_token: ${{ inputs.scw_secret_token }}
-        ENV: ${{ steps.prep.outputs.env }}
+    # - name: Retrieve kubeconfig file
+    #   uses: ./.github/actions/action-kubeconfig
+    #   with:
+    #     kube_cluster_name: ${{ steps.prep.outputs.kube_cluster_name }}
+    #     scw_secret_token: ${{ inputs.scw_secret_token }}
+    #     ENV: ${{ steps.prep.outputs.env }}
 
     - name: Install helm binaries
       uses: azure/setup-helm@v1
