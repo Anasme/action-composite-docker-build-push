@@ -20,7 +20,7 @@ runs:
     - name: Check if image exist on SCW docker registry
       id: check_image
       run: |
-        if ! docker manifest inspect mysql:8.0.28 > /dev/null; then
+        if ! docker manifest inspect mysql:8.0.27 > /dev/null; then
           image_exist="false"
         else
           image_exist="true"
