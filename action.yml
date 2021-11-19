@@ -25,6 +25,6 @@ runs:
         else
           image_exist="true"
         fi
-        echo ::set-output name=docker_image_exist::${image_exist}
+        echo ::set-output name=docker_image_exist::toJSON($image_exist)
       shell: bash
 
