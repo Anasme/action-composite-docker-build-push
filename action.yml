@@ -21,10 +21,7 @@ runs:
       id: check_image
       run: |
         if ! docker manifest inspect mysql:8.0.28 > /dev/null; then
-          image_exist="false"
-        else
-          image_exist="true"
+          echo ::set-output name=image_not_found::image_not_found
         fi
-        echo ::set-output name=docker_image_exist::toJSON($image_exist)
       shell: bash
 
