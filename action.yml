@@ -13,7 +13,7 @@ inputs:
 outputs:
   docker_image_exist:
     description: "Docker image present or no on docker registry"
-    value: ${{ steps.check_image.outputs.docker_image_exist }}
+    value: ${{ steps.check_image.outputs.image_not_found }}
 runs:
   using: "composite"
   steps:
