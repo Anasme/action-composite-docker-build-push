@@ -11,7 +11,7 @@ inputs:
   #   description: “Password for image registry (token for scw)”
   #   required: true
 outputs:
-  docker_image_exist:
+  image_not_found:
     description: "Docker image present or no on docker registry"
     value: ${{ steps.check_image.outputs.image_not_found }}
 runs:
