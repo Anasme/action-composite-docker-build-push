@@ -28,7 +28,7 @@ runs:
         # else
         #   echo ::set-output name=image_found::true  
         # fi
-        if docker manifest inspect inspect mysql:8.0.27 > /dev/null; then
+        if docker manifest inspect mysql:8.0.27 > /dev/null; then
           echo ::set-output name=image_found::true
         else
           echo ::set-output name=image_not_found::true
