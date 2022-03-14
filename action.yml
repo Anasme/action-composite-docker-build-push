@@ -4,6 +4,9 @@ inputs:
   ENV:
     description: “Docker private registry url”
     required: false
+  BATCH:
+    description: “Docker private registry url”
+    required: false
   # container_registry_login:
   #   description: “Login for image registry”
   #   required: true
@@ -20,6 +23,18 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - name: Build service image
+      if: '!inputs.BATCH'
+      run: |
+        echo "batch inactiv"
+      shell: bash
+
+    - name: Build batch image
+      if: 'inputs.BATCH'
+      run: |
+        echo "batch activ"
+      shell: bash
+      
     - name: Check if image exist on SCW docker registry
       id: check_existing_docker_image
       run: |
