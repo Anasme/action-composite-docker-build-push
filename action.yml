@@ -39,6 +39,8 @@ runs:
       run: |
         if [[ -n "${{ inputs.BATCH }}" ]]; then
           IMAGE_NAME=mysql:8.0.28-batch
+        else
+          IMAGE_NAME=mysql:8.0.28
         fi
         TAG_SHA="${IMAGE_NAME}"
         echo "tag_sha=${TAG_SHA}" >> $GITHUB_OUTPUT
